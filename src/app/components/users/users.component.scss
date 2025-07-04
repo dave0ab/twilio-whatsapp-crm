@@ -1,0 +1,310 @@
+// Users component specific styles
+.users-container {
+  // Add any component-specific styles here
+}
+
+// Users table
+.users-table {
+  .user-row {
+    transition: background-color 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f9fafb;
+    }
+  }
+  
+  .user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+    transition: border-color 0.2s ease-in-out;
+    
+    &:hover {
+      border-color: #10b981;
+    }
+  }
+  
+  .user-info {
+    .user-name {
+      font-weight: 500;
+      color: #111827;
+      margin-bottom: 0.125rem;
+    }
+    
+    .user-contact {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+  }
+}
+
+// Status badges
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  
+  &.status-active {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+  
+  &.status-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+  
+  &.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+}
+
+// Role badges
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  
+  &.role-admin {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+  }
+  
+  &.role-agent {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+  }
+  
+  &.role-support {
+    background-color: #dcfce7;
+    color: #16a34a;
+  }
+  
+  &.role-patient {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+}
+
+// Action buttons
+.action-buttons {
+  .action-btn {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+    
+    &.btn-primary {
+      color: #059669;
+      
+      &:hover {
+        color: #047857;
+      }
+    }
+    
+    &.btn-secondary {
+      color: #4f46e5;
+      
+      &:hover {
+        color: #4338ca;
+      }
+    }
+  }
+}
+
+// Add user modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideInUp 0.3s ease-out;
+  
+  .modal-header {
+    margin-bottom: 1.5rem;
+    
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111827;
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+    
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease-in-out;
+      
+      &:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    
+    .btn {
+      flex: 1;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      border: none;
+      
+      &.btn-primary {
+        background-color: #10b981;
+        color: white;
+        
+        &:hover:not(:disabled) {
+          background-color: #059669;
+        }
+        
+        &:disabled {
+          background-color: #d1d5db;
+          cursor: not-allowed;
+        }
+      }
+      
+      &.btn-secondary {
+        background-color: #f3f4f6;
+        color: #374151;
+        
+        &:hover {
+          background-color: #e5e7eb;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Filter section
+.filter-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  
+  .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-selects {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .users-table {
+    font-size: 0.875rem;
+    
+    .user-avatar {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .search-input {
+      min-width: auto;
+    }
+    
+    .filter-selects {
+      justify-content: stretch;
+      
+      select {
+        flex: 1;
+      }
+    }
+  }
+  
+  .modal-content {
+    margin: 1rem;
+    max-width: none;
+  }
+}

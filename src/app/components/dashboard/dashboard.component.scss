@@ -1,0 +1,58 @@
+// Dashboard component specific styles
+.dashboard-container {
+  // Add any component-specific styles here
+}
+
+// Stats cards animation
+.stats-card {
+  transition: all 0.3s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Recent activity sections
+.recent-activity {
+  .activity-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 0 -12px;
+    }
+  }
+}
+
+// Status indicators
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+}
+
+// Responsive grid adjustments
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .recent-activity-grid {
+    grid-template-columns: 1fr;
+  }
+}

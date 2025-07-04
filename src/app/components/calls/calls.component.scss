@@ -1,0 +1,29 @@
+// Calls component specific styles
+.calls-container {
+  // Add any component-specific styles here
+}
+
+// Override table hover effects if needed
+.hover\:bg-gray-50:hover {
+  transition: background-color 0.2s ease-in-out;
+}
+
+// Custom scrollbar for table
+.overflow-x-auto {
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}

@@ -1,0 +1,146 @@
+// Settings component specific styles
+.settings-container {
+  // Add any component-specific styles here
+}
+
+// Settings cards
+.settings-card {
+  transition: all 0.3s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Form controls
+.form-group {
+  margin-bottom: 1.5rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+    
+    &:focus {
+      outline: none;
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    
+    &:hover {
+      border-color: #9ca3af;
+    }
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+// Checkbox styles
+.checkbox-group {
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .checkbox-label {
+      flex: 1;
+      
+      .label-text {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.25rem;
+      }
+      
+      .label-description {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+    }
+    
+    input[type="checkbox"] {
+      width: auto;
+      margin-left: 1rem;
+      accent-color: #10b981;
+    }
+  }
+}
+
+// File type checkboxes
+.file-type-group {
+  .file-type-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 0.5rem;
+      accent-color: #10b981;
+    }
+    
+    label {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+    }
+  }
+}
+
+// Save button
+.save-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 1rem;
+  }
+  
+  .settings-card {
+    padding: 1rem;
+  }
+}

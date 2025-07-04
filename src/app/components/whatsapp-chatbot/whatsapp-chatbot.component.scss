@@ -1,0 +1,388 @@
+// WhatsApp Chatbot component specific styles
+.customer-list {
+  min-width: 320px;
+  max-width: 400px;
+  
+  @media (max-width: 767px) {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+.customer-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background-color: #f9fafb;
+    transform: translateX(2px);
+  }
+  
+  &.selected {
+    background-color: #f0fdf4;
+    border-left: 4px solid #10b981;
+  }
+}
+
+.chat-area {
+  min-width: 0; // Prevents flex item from overflowing
+}
+
+.chat-messages {
+  scroll-behavior: smooth;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
+
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Message animations
+.message-wrapper {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Status indicators
+.status-indicator {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse-ring 2s infinite;
+    opacity: 0.3;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
+}
+
+// Typing indicator
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  
+  .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #9ca3af;
+    animation: typing 1.4s infinite ease-in-out;
+    
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+// File preview styles
+.file-preview {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// Search input enhancements
+.search-input {
+  position: relative;
+  
+  input {
+    padding-left: 2.5rem;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+  }
+  
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  &:focus-within .search-icon {
+    color: #10b981;
+  }
+}
+
+// Message input enhancements
+.message-input {
+  textarea {
+    resize: none;
+    overflow-y: auto;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 2px;
+    }
+  }
+}
+
+// Unread badge animation
+.unread-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Tag styles
+.tag {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  }
+}
+
+// Mobile optimizations
+@media (max-width: 767px) {
+  .customer-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+  }
+  
+  .chat-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .message-bubble {
+    max-width: 85%;
+  }
+  
+  .chat-header {
+    padding: 1rem;
+  }
+  
+  .chat-messages {
+    padding: 1rem;
+  }
+  
+  .message-input {
+    padding: 1rem;
+  }
+}
+
+// Responsive adjustments
+@media (min-width: 768px) and (max-width: 1023px) {
+  .customer-list {
+    min-width: 280px;
+    max-width: 320px;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .message-bubble {
+    border: 1px solid currentColor;
+  }
+  
+  .customer-item {
+    border: 1px solid transparent;
+    
+    &:hover, &.selected {
+      border-color: currentColor;
+    }
+  }
+}
+
+// Dark mode support (for future implementation)
+@media (prefers-color-scheme: dark) {
+  // Dark mode styles can be added here
+}
+
+// Print styles
+@media print {
+  .customer-list {
+    display: none;
+  }
+  
+  .chat-area {
+    width: 100%;
+  }
+  
+  .message-input,
+  .chat-header button {
+    display: none;
+  }
+}
+
+// Focus states for accessibility
+.customer-item:focus,
+.message-input textarea:focus,
+button:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+// Smooth transitions for all interactive elements
+button, .customer-item, .message-bubble {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced hover effects
+.btn-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+// Loading states
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Stagger animations for customer list
+.stagger-item {
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Enhanced file icon styling
+.file-icon {
+  transition: transform 0.2s ease-in-out;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+// Message status indicators
+.message-status {
+  .material-icons {
+    font-size: 14px;
+    opacity: 0.7;
+    
+    &.read {
+      color: #10b981;
+      opacity: 1;
+    }
+  }
+}
+
+// Improved scrollbar for customer list
+.customer-list {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}

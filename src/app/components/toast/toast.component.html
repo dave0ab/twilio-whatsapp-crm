@@ -1,0 +1,18 @@
+<div class="fixed top-4 right-4 z-50 space-y-2">
+  <div *ngFor="let toast of toasts" 
+       class="flex items-center p-4 rounded-lg shadow-lg transition-all duration-300 transform"
+       [class]="getToastStyle(toast.type)">
+    <div class="flex-shrink-0 mr-3">
+      <span class="text-lg">{{ getToastIcon(toast.type) }}</span>
+    </div>
+    <div class="flex-1">
+      <p class="text-sm font-medium">{{ toast.message }}</p>
+    </div>
+    <button 
+      (click)="removeToast(toast.id)"
+      class="flex-shrink-0 ml-3 text-lg opacity-70 hover:opacity-100"
+    >
+      ×
+    </button>
+  </div>
+</div>

@@ -1,0 +1,139 @@
+<div class="p-6 fade-in">
+  <div class="mb-8">
+    <h1 class="text-3xl font-title font-semibold text-gray-900 mb-2">Dashboard</h1>
+    <p class="text-gray-600">Welcome back! Here's what's happening with your healthcare system.</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-soft p-6 card-hover cursor-pointer stagger-item">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center transition-all duration-200">
+            <span class="material-icons text-primary-600">chat</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Total Messages</p>
+          <p class="text-2xl font-title font-bold text-gray-900">{{ stats?.totalMessages || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-soft p-6 card-hover cursor-pointer stagger-item">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center transition-all duration-200">
+            <span class="material-icons text-blue-600">phone</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Total Calls</p>
+          <p class="text-2xl font-title font-bold text-gray-900">{{ stats?.totalCalls || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-soft p-6 card-hover cursor-pointer stagger-item">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center transition-all duration-200">
+            <span class="material-icons text-purple-600">folder</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Files Uploaded</p>
+          <p class="text-2xl font-title font-bold text-gray-900">{{ stats?.totalFiles || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-soft p-6 card-hover cursor-pointer stagger-item">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center transition-all duration-200">
+            <span class="material-icons text-orange-600">assignment</span>
+          </div>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Orders</p>
+          <p class="text-2xl font-title font-bold text-gray-900">{{ stats?.totalOrders || 0 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Users -->
+    <div class="bg-white rounded-xl shadow-soft p-6 interactive-hover">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-title font-semibold text-gray-900">Recent Users</h3>
+        <button 
+          (click)="goToUsers()"
+          class="text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors duration-200 btn-hover px-3 py-1 rounded-lg"
+        >
+          View all
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div *ngFor="let user of recentUsers; let i = index" 
+             class="flex items-center stagger-item transition-all duration-200 hover:bg-gray-25 p-3 rounded-xl"
+             [style.animation-delay]="(i * 0.1) + 's'">
+          <img 
+            [src]="user.avatar || 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'" 
+            [alt]="user.name" 
+            class="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200"
+          >
+          <div class="ml-4 flex-1">
+            <p class="text-sm font-medium text-gray-900">{{ user.name }}</p>
+            <p class="text-xs text-gray-500">{{ user.phone }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-gray-500">{{ getTimeAgo(user.createdAt) }}</p>
+            <div class="flex items-center justify-end mt-1">
+              <span class="w-2 h-2 rounded-full mr-2 status-indicator transition-all duration-200" 
+                    [class]="user.status === 'active' ? 'bg-primary-400' : 'bg-gray-400'"></span>
+              <span class="text-xs text-gray-500 capitalize">{{ user.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-xl shadow-soft p-6 interactive-hover">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-title font-semibold text-gray-900">Recent Orders</h3>
+        <button 
+          (click)="goToOrders()"
+          class="text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors duration-200 btn-hover px-3 py-1 rounded-lg"
+        >
+          View all
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div *ngFor="let order of recentOrders; let i = index" 
+             class="flex items-center stagger-item transition-all duration-200 hover:bg-gray-25 p-3 rounded-xl"
+             [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200"
+                 [class]="getOrderTypeStyle(order.type)">
+              <span class="material-icons text-sm">{{ getOrderTypeIcon(order.type) }}</span>
+            </div>
+          </div>
+          <div class="ml-4 flex-1">
+            <p class="text-sm font-medium text-gray-900">{{ order.title }}</p>
+            <p class="text-xs text-gray-500">{{ order.userName }}</p>
+          </div>
+          <div class="text-right">
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                  [class]="getStatusStyle(order.status)">
+              {{ order.status.replace('_', ' ') }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

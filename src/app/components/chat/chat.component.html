@@ -1,0 +1,97 @@
+<div class="h-full flex flex-col fade-in">
+  <!-- Header -->
+  <div class="bg-white shadow-soft px-6 py-4 border-b border-gray-100">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <button 
+          (click)="goBack()"
+          class="mr-4 text-gray-600 hover:text-primary-600 transition-colors duration-200 btn-hover p-2 rounded-xl"
+        >
+          <span class="material-icons">arrow_back</span>
+        </button>
+        <img 
+          [src]="user?.avatar || 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'" 
+          [alt]="user?.name" 
+          class="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200"
+        >
+        <div class="ml-4">
+          <h2 class="text-lg font-title font-semibold text-gray-900">{{ user?.name }}</h2>
+          <p class="text-sm text-gray-500">{{ user?.phone }}</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full status-indicator transition-all duration-200" 
+              [class]="user?.status === 'active' ? 'bg-primary-400' : 'bg-gray-400'"></span>
+        <span class="text-sm text-gray-600 capitalize">{{ user?.status }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Messages -->
+  <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-25">
+    <div *ngFor="let message of messages; let i = index" 
+         class="flex stagger-item"
+         [style.animation-delay]="(i * 0.1) + 's'"
+         [class.justify-end]="message.sender === 'bot' || message.sender === 'agent'">
+      <div class="max-w-xs lg:max-w-md"
+           [class]="message.sender === 'user' ? 'order-2' : 'order-1'">
+        <div class="px-4 py-3 rounded-xl shadow-soft transition-all duration-200 hover:shadow-soft-lg"
+             [class]="getMessageStyle(message.sender)">
+          
+          <!-- Text Message -->
+          <div *ngIf="message.type === 'text'" class="text-sm">
+            {{ message.content }}
+          </div>
+
+          <!-- Document Message -->
+          <div *ngIf="message.type === 'document'" class="text-sm">
+            <div class="flex items-center mb-2">
+              <span class="material-icons mr-2">description</span>
+              <span class="font-medium">{{ message.fileName }}</span>
+            </div>
+            <p class="text-xs opacity-75">{{ formatFileSize(message.fileSize || 0) }}</p>
+            <button class="mt-2 text-xs underline opacity-75 hover:opacity-100 transition-opacity duration-200">
+              Download
+            </button>
+          </div>
+
+          <!-- Image Message -->
+          <div *ngIf="message.type === 'image'" class="text-sm">
+            <div class="mb-2">
+              <div class="w-48 h-32 bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-gray-300">
+                <span class="material-icons text-gray-500">image</span>
+              </div>
+            </div>
+            <p class="text-xs opacity-75">{{ message.fileName }}</p>
+          </div>
+
+          <!-- Timestamp -->
+          <div class="text-xs opacity-75 mt-2">
+            {{ message.timestamp | date:'short' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="bg-white border-t border-gray-100 px-6 py-4">
+    <div class="flex items-center space-x-3">
+      <input 
+        type="text" 
+        placeholder="Type a message..."
+        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        disabled
+      >
+      <button 
+        class="bg-gradient-imarlet text-white px-6 py-3 rounded-xl hover:shadow-imarlet transition-all duration-200 btn-hover font-medium"
+        disabled
+      >
+        <span class="material-icons">send</span>
+      </button>
+    </div>
+    <p class="text-xs text-gray-500 mt-3">
+      * This is a demo interface. Real messaging functionality would be implemented with API integration.
+    </p>
+  </div>
+</div>

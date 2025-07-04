@@ -1,0 +1,340 @@
+<div class="p-6 fade-in">
+  <div class="mb-6">
+    <h1 class="text-2xl font-title font-semibold text-gray-900 mb-2">Orders</h1>
+    <p class="text-gray-600">Manage healthcare service orders</p>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="bg-white rounded-xl shadow-soft p-6 mb-6 interactive-hover">
+    <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <input 
+          type="text" 
+          placeholder="Search orders..."
+          [(ngModel)]="searchTerm"
+          (input)="filterOrders()"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+      </div>
+      <div class="flex gap-3">
+        <select 
+          [(ngModel)]="typeFilter"
+          (change)="filterOrders()"
+          class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+          <option value="">All Types</option>
+          <option value="lab_test">Lab Test</option>
+          <option value="consultation">Consultation</option>
+          <option value="prescription">Prescription</option>
+          <option value="document_upload">Document Upload</option>
+        </select>
+        <select 
+          [(ngModel)]="statusFilter"
+          (change)="filterOrders()"
+          class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select 
+          [(ngModel)]="priorityFilter"
+          (change)="filterOrders()"
+          class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+          <option value="">All Priority</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-100">
+        <thead class="bg-gray-25">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Order</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Customer</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Priority</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Amount</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Created</th>
+            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-50">
+          <tr *ngFor="let order of filteredOrders; let i = index" 
+              (click)="openOrderModal(order)"
+              class="hover:bg-gray-25 transition-all duration-200 cursor-pointer stagger-item"
+              [style.animation-delay]="(i * 0.1) + 's'">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <span class="material-icons text-2xl mr-3 text-gray-600">{{ getOrderTypeIcon(order.type) }}</span>
+                <div>
+                  <div class="text-sm font-medium text-gray-900">{{ order.title }}</div>
+                  <div class="text-sm text-gray-500 truncate max-w-xs">{{ order.description }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900">{{ order.userName }}</div>
+              <div class="text-sm text-gray-500">{{ order.userPhone }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                    [class]="getOrderTypeStyle(order.type)">
+                {{ order.type.replace('_', ' ') | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                    [class]="getStatusStyle(order.status)">
+                {{ order.status.replace('_', ' ') | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                    [class]="getPriorityStyle(order.priority)">
+                {{ order.priority | titlecase }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <span *ngIf="order.amount">${{ order.amount }}</span>
+              <span *ngIf="!order.amount" class="text-gray-400">-</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ order.createdAt | date:'short' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <div class="flex space-x-2" (click)="$event.stopPropagation()">
+                <button 
+                  *ngIf="order.status === 'pending'"
+                  (click)="updateStatus(order.id, 'in_progress')"
+                  class="text-blue-600 hover:text-blue-900 btn-hover px-2 py-1 rounded-lg"
+                  title="Start Order"
+                >
+                  <span class="material-icons text-sm">play_arrow</span>
+                </button>
+                <button 
+                  *ngIf="order.status === 'in_progress'"
+                  (click)="updateStatus(order.id, 'completed')"
+                  class="text-primary-600 hover:text-primary-900 btn-hover px-2 py-1 rounded-lg"
+                  title="Complete Order"
+                >
+                  <span class="material-icons text-sm">check</span>
+                </button>
+                <button 
+                  *ngIf="order.status !== 'cancelled' && order.status !== 'completed'"
+                  (click)="updateStatus(order.id, 'cancelled')"
+                  class="text-red-600 hover:text-red-900 btn-hover px-2 py-1 rounded-lg"
+                  title="Cancel Order"
+                >
+                  <span class="material-icons text-sm">close</span>
+                </button>
+                <button 
+                  (click)="openOrderModal(order)"
+                  class="text-gray-600 hover:text-gray-900 btn-hover px-2 py-1 rounded-lg"
+                  title="View Details"
+                >
+                  <span class="material-icons text-sm">visibility</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="filteredOrders.length === 0" class="text-center py-16">
+    <div class="text-6xl mb-4 animate-bounce-soft">
+      <span class="material-icons md-48 text-gray-400">assignment</span>
+    </div>
+    <h3 class="text-lg font-title font-medium text-gray-900 mb-2">No orders found</h3>
+    <p class="text-gray-600">Try adjusting your search or filters</p>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div *ngIf="selectedOrder" 
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+       (click)="closeOrderModal()">
+    <div class="bg-white rounded-xl shadow-soft-lg w-full max-w-2xl max-h-[90vh] overflow-hidden"
+         (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <span class="material-icons text-3xl mr-3 text-primary-600">{{ getOrderTypeIcon(selectedOrder.type) }}</span>
+            <div>
+              <h2 class="text-xl font-title font-semibold text-gray-900">{{ selectedOrder.title }}</h2>
+              <p class="text-sm text-gray-600">Order ID: {{ selectedOrder.id }}</p>
+            </div>
+          </div>
+          <button 
+            (click)="closeOrderModal()"
+            class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-xl hover:bg-gray-100"
+          >
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="px-6 py-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        
+        <!-- Status and Priority Row -->
+        <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 rounded-xl">
+          <div class="flex items-center space-x-4">
+            <div>
+              <span class="text-sm text-gray-600">Status</span>
+              <div class="mt-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                      [class]="getStatusStyle(selectedOrder.status)">
+                  {{ selectedOrder.status.replace('_', ' ') | titlecase }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <span class="text-sm text-gray-600">Priority</span>
+              <div class="mt-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                      [class]="getPriorityStyle(selectedOrder.priority)">
+                  {{ selectedOrder.priority | titlecase }}
+                </span>
+              </div>
+            </div>
+            <div *ngIf="selectedOrder.amount">
+              <span class="text-sm text-gray-600">Amount</span>
+              <div class="mt-1 text-lg font-semibold text-gray-900">${{ selectedOrder.amount }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="mb-6">
+          <h3 class="text-lg font-title font-semibold text-gray-900 mb-3">Customer Information</h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="text-sm text-gray-600">Name</span>
+                <p class="font-medium text-gray-900">{{ selectedOrder.userName }}</p>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Phone</span>
+                <p class="font-medium text-gray-900">{{ selectedOrder.userPhone }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Details -->
+        <div class="mb-6">
+          <h3 class="text-lg font-title font-semibold text-gray-900 mb-3">Order Details</h3>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <div class="mb-4">
+              <span class="text-sm text-gray-600">Description</span>
+              <p class="text-gray-900 mt-1">{{ selectedOrder.description }}</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="text-sm text-gray-600">Type</span>
+                <p class="font-medium text-gray-900">{{ selectedOrder.type.replace('_', ' ') | titlecase }}</p>
+              </div>
+              <div *ngIf="selectedOrder.assignedTo">
+                <span class="text-sm text-gray-600">Assigned To</span>
+                <p class="font-medium text-gray-900">{{ selectedOrder.assignedTo }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="mb-6">
+          <h3 class="text-lg font-title font-semibold text-gray-900 mb-3">Timeline</h3>
+          <div class="space-y-3">
+            <div class="flex items-center p-3 bg-gray-50 rounded-xl">
+              <span class="material-icons text-blue-600 mr-3">add_circle</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Order Created</p>
+                <p class="text-xs text-gray-600">{{ selectedOrder.createdAt | date:'medium' }}</p>
+              </div>
+            </div>
+            
+            <div *ngIf="selectedOrder.updatedAt && selectedOrder.updatedAt !== selectedOrder.createdAt" 
+                 class="flex items-center p-3 bg-gray-50 rounded-xl">
+              <span class="material-icons text-yellow-600 mr-3">update</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Last Updated</p>
+                <p class="text-xs text-gray-600">{{ selectedOrder.updatedAt | date:'medium' }}</p>
+              </div>
+            </div>
+            
+            <div *ngIf="selectedOrder.completedAt" 
+                 class="flex items-center p-3 bg-green-50 rounded-xl">
+              <span class="material-icons text-green-600 mr-3">check_circle</span>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">Order Completed</p>
+                <p class="text-xs text-gray-600">{{ selectedOrder.completedAt | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div *ngIf="selectedOrder.notes" class="mb-6">
+          <h3 class="text-lg font-title font-semibold text-gray-900 mb-3">Notes</h3>
+          <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+            <p class="text-gray-900">{{ selectedOrder.notes }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div class="flex justify-between items-center">
+          <div class="flex space-x-2">
+            <button 
+              *ngIf="selectedOrder.status === 'pending'"
+              (click)="updateStatusAndClose(selectedOrder.id, 'in_progress')"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 btn-hover"
+            >
+              <span class="material-icons mr-2 text-sm">play_arrow</span>
+              Start Order
+            </button>
+            <button 
+              *ngIf="selectedOrder.status === 'in_progress'"
+              (click)="updateStatusAndClose(selectedOrder.id, 'completed')"
+              class="bg-gradient-imarlet hover:shadow-imarlet text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 btn-hover"
+            >
+              <span class="material-icons mr-2 text-sm">check</span>
+              Complete Order
+            </button>
+            <button 
+              *ngIf="selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'completed'"
+              (click)="updateStatusAndClose(selectedOrder.id, 'cancelled')"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 btn-hover"
+            >
+              <span class="material-icons mr-2 text-sm">close</span>
+              Cancel Order
+            </button>
+          </div>
+          <button 
+            (click)="closeOrderModal()"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 btn-hover"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

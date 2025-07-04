@@ -1,0 +1,263 @@
+<div class="h-full flex bg-gray-50 fade-in">
+  <!-- Customer List -->
+  <div class="customer-list bg-white shadow-soft border-r border-gray-200 flex flex-col transition-all duration-300"
+       [class.w-full]="isMobile && showCustomerList"
+       [class.w-80]="!isMobile"
+       [class.hidden]="isMobile && !showCustomerList">
+    
+    <!-- Header -->
+    <div class="p-4 border-b border-gray-200">
+      <h2 class="text-lg font-title font-semibold text-gray-900 mb-4">WhatsApp Customers</h2>
+      
+      <!-- Search -->
+      <div class="relative">
+        <input 
+          type="text" 
+          placeholder="Search customers..."
+          [(ngModel)]="searchTerm"
+          (input)="searchCustomers()"
+          class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+        <span class="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
+      </div>
+    </div>
+
+    <!-- Customer List -->
+    <div class="flex-1 overflow-y-auto">
+      <div *ngIf="isLoading" class="p-4 text-center">
+        <div class="animate-pulse">
+          <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+        </div>
+      </div>
+
+      <div *ngFor="let customer of filteredCustomers; let i = index" 
+           (click)="selectCustomer(customer)"
+           class="customer-item p-4 border-b border-gray-100 cursor-pointer transition-all duration-200 hover:bg-gray-50 stagger-item"
+           [style.animation-delay]="(i * 0.1) + 's'"
+           [class.bg-primary-50]="selectedCustomer?.id === customer.id"
+           [class.border-primary-200]="selectedCustomer?.id === customer.id">
+        
+        <div class="flex items-start space-x-3">
+          <!-- Avatar with Status -->
+          <div class="relative flex-shrink-0">
+            <img 
+              [src]="customer.avatar || 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'" 
+              [alt]="customer.name" 
+              class="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200"
+            >
+            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white transition-all duration-200"
+                 [class]="getStatusColor(customer.status)"></div>
+          </div>
+
+          <!-- Customer Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="text-sm font-medium text-gray-900 truncate">{{ customer.name }}</h3>
+              <span class="text-xs text-gray-500">{{ getTimeAgo(customer.lastMessage.timestamp) }}</span>
+            </div>
+            
+            <p class="text-xs text-gray-600 mb-1">{{ customer.phone }}</p>
+            
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-600 truncate flex-1 mr-2">
+                <span *ngIf="customer.lastMessage.sender === 'bot'" class="text-blue-600 font-medium">Bot: </span>
+                <span *ngIf="customer.lastMessage.sender === 'agent'" class="text-primary-600 font-medium">You: </span>
+                <span *ngIf="customer.lastMessage.type === 'document'" class="material-icons text-xs mr-1">attach_file</span>
+                <span *ngIf="customer.lastMessage.type === 'image'" class="material-icons text-xs mr-1">image</span>
+                {{ customer.lastMessage.content }}
+              </p>
+              
+              <!-- Unread Badge -->
+              <span *ngIf="customer.unreadCount > 0" 
+                    class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full animate-pulse">
+                {{ customer.unreadCount }}
+              </span>
+            </div>
+
+            <!-- Tags -->
+            <div *ngIf="customer.tags && customer.tags.length > 0" class="flex flex-wrap gap-1 mt-2">
+              <span *ngFor="let tag of customer.tags.slice(0, 2)" 
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                {{ tag }}
+              </span>
+              <span *ngIf="customer.tags.length > 2" 
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                +{{ customer.tags.length - 2 }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredCustomers.length === 0" class="p-8 text-center">
+        <div class="text-6xl mb-4 animate-bounce-soft">
+          <span class="material-icons md-48 text-gray-400">chat</span>
+        </div>
+        <h3 class="text-lg font-title font-medium text-gray-900 mb-2">No customers found</h3>
+        <p class="text-gray-600">Try adjusting your search terms</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area flex-1 flex flex-col"
+       [class.hidden]="isMobile && showCustomerList">
+    
+    <!-- Chat Header -->
+    <div *ngIf="selectedCustomer" class="chat-header bg-white shadow-soft px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <!-- Back Button (Mobile) -->
+          <button *ngIf="isMobile"
+                  (click)="goBackToCustomerList()"
+                  class="mr-4 text-gray-600 hover:text-primary-600 transition-colors duration-200 btn-hover p-2 rounded-xl">
+            <span class="material-icons">arrow_back</span>
+          </button>
+          
+          <div class="relative mr-4">
+            <img 
+              [src]="selectedCustomer.avatar || 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'" 
+              [alt]="selectedCustomer.name" 
+              class="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200"
+            >
+            <div class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white transition-all duration-200"
+                 [class]="getStatusColor(selectedCustomer.status)"></div>
+          </div>
+          
+          <div>
+            <h2 class="text-lg font-title font-semibold text-gray-900">{{ selectedCustomer.name }}</h2>
+            <div class="flex items-center text-sm text-gray-500">
+              <span>{{ selectedCustomer.phone }}</span>
+              <span class="mx-2">•</span>
+              <span class="capitalize">{{ selectedCustomer.status }}</span>
+              <span *ngIf="selectedCustomer.status === 'typing'" class="ml-2 flex space-x-1">
+                <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></div>
+                <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-2">
+          <button class="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-xl transition-all duration-200 btn-hover">
+            <span class="material-icons">phone</span>
+          </button>
+          <button class="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-xl transition-all duration-200 btn-hover">
+            <span class="material-icons">videocam</span>
+          </button>
+          <button class="p-2 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-xl transition-all duration-200 btn-hover">
+            <span class="material-icons">more_vert</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div *ngIf="selectedCustomer" 
+         #chatContainer
+         class="chat-messages flex-1 overflow-y-auto p-6 space-y-4 bg-gray-25">
+      
+      <div *ngFor="let message of chatMessages; let i = index" 
+           class="message-wrapper stagger-item"
+           [style.animation-delay]="(i * 0.05) + 's'">
+        
+        <div class="flex"
+             [class.justify-end]="message.sender === 'bot' || message.sender === 'agent'"
+             [class.justify-start]="message.sender === 'customer'">
+          
+          <div class="max-w-xs lg:max-w-md message-bubble"
+               [class]="getMessageStyle(message.sender)">
+            
+            <!-- Text Message -->
+            <div *ngIf="message.type === 'text'" class="text-sm">
+              {{ message.content }}
+            </div>
+
+            <!-- Document Message -->
+            <div *ngIf="message.type === 'document'" class="text-sm">
+              <div class="flex items-center p-3 bg-white bg-opacity-20 rounded-lg mb-2">
+                <span class="material-icons mr-3 text-2xl">{{ getFileIcon(message.fileName || '') }}</span>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium truncate">{{ message.fileName }}</p>
+                  <p class="text-xs opacity-75">{{ formatFileSize(message.fileSize || 0) }}</p>
+                </div>
+              </div>
+              <button 
+                (click)="downloadFile(message.fileUrl || '', message.fileName || '')"
+                class="text-xs underline opacity-75 hover:opacity-100 transition-opacity duration-200">
+                Download
+              </button>
+            </div>
+
+            <!-- Image Message -->
+            <div *ngIf="message.type === 'image'" class="text-sm">
+              <div class="mb-2">
+                <div class="w-48 h-32 bg-white bg-opacity-20 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-opacity-30 cursor-pointer">
+                  <span class="material-icons text-3xl opacity-75">image</span>
+                </div>
+              </div>
+              <p class="text-xs opacity-75">{{ message.fileName }}</p>
+            </div>
+
+            <!-- Timestamp -->
+            <div class="text-xs opacity-75 mt-2 flex items-center justify-between">
+              <span>{{ message.timestamp | date:'short' }}</span>
+              <span *ngIf="message.sender === 'agent' && message.isRead" class="material-icons text-xs">done_all</span>
+              <span *ngIf="message.sender === 'agent' && !message.isRead" class="material-icons text-xs">done</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Input -->
+    <div *ngIf="selectedCustomer" class="message-input bg-white border-t border-gray-200 px-6 py-4">
+      <div class="flex items-end space-x-3">
+        <!-- Attachment Button -->
+        <button class="p-3 text-gray-600 hover:text-primary-600 hover:bg-gray-100 rounded-xl transition-all duration-200 btn-hover">
+          <span class="material-icons">attach_file</span>
+        </button>
+
+        <!-- Message Input -->
+        <div class="flex-1">
+          <textarea 
+            [(ngModel)]="newMessage"
+            (keydown)="onKeyPress($event)"
+            placeholder="Type a message..."
+            rows="1"
+            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 resize-none"
+            style="min-height: 48px; max-height: 120px;"
+          ></textarea>
+        </div>
+
+        <!-- Send Button -->
+        <button 
+          (click)="sendMessage()"
+          [disabled]="!newMessage.trim()"
+          class="bg-gradient-imarlet text-white p-3 rounded-xl hover:shadow-imarlet transition-all duration-200 btn-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          <span class="material-icons">send</span>
+        </button>
+      </div>
+      
+      <p class="text-xs text-gray-500 mt-2">
+        Press Enter to send, Shift+Enter for new line
+      </p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!selectedCustomer" class="flex-1 flex items-center justify-center bg-gray-25">
+      <div class="text-center">
+        <div class="text-6xl mb-4 animate-bounce-soft">
+          <span class="material-icons md-48 text-gray-400">chat_bubble_outline</span>
+        </div>
+        <h3 class="text-lg font-title font-medium text-gray-900 mb-2">Select a customer to start chatting</h3>
+        <p class="text-gray-600">Choose a customer from the list to view their conversation history</p>
+      </div>
+    </div>
+  </div>
+</div>

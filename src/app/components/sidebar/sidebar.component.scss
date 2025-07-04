@@ -1,0 +1,359 @@
+// Sidebar component specific styles
+.sidebar-container {
+  position: relative;
+}
+
+.sidebar-content {
+  height: 100vh;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  @media (max-width: 1023px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    width: 16rem; // Always 64 (w-64) on mobile
+    transform: translateX(-100%);
+    
+    &.translate-x-0 {
+      transform: translateX(0);
+    }
+    
+    &.-translate-x-full {
+      transform: translateX(-100%);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    position: fixed;
+    transform: translateX(0) !important;
+  }
+}
+
+// Mobile overlay
+.mobile-overlay {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Logo section with toggle button
+.logo-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  
+  h1 {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// Toggle button styles
+.toggle-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background-color: #f3f4f6;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  .material-icons {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  &:hover .material-icons {
+    transform: scale(1.1);
+  }
+}
+
+// Navigation styles
+.nav-menu {
+  .nav-item {
+    margin-bottom: 0.25rem;
+    animation: slideInLeft 0.3s ease-out;
+    animation-fill-mode: both;
+    
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 0.1}s;
+      }
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      color: #6b7280;
+      text-decoration: none;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease-in-out;
+      border: 1px solid transparent;
+      position: relative;
+      
+      &:hover {
+        background-color: #f9fafb;
+        color: #374151;
+        transform: translateX(2px);
+      }
+      
+      &.active {
+        background-color: #f0fdf4;
+        color: #059669;
+        border-color: #bbf7d0;
+        font-weight: 600;
+        
+        .nav-icon {
+          transform: scale(1.1);
+        }
+      }
+      
+      .nav-icon {
+        font-size: 1.125rem;
+        transition: transform 0.2s ease-in-out;
+      }
+      
+      .nav-text {
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Tooltip styles
+.tooltip {
+  pointer-events: none;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -4px;
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background-color: #111827;
+  }
+}
+
+// Profile section
+.profile-section {
+  position: relative;
+  
+  .profile-dropdown {
+    animation: slideInUp 0.2s ease-out;
+    transform-origin: bottom;
+    min-width: 200px;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// User profile section
+.user-profile {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  
+  .profile-info {
+    display: flex;
+    align-items: center;
+    
+    .profile-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+      transition: border-color 0.2s ease-in-out;
+      
+      &:hover {
+        border-color: #10b981;
+      }
+    }
+    
+    .profile-details {
+      margin-left: 0.75rem;
+      
+      .profile-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.125rem;
+      }
+      
+      .profile-role {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+    }
+  }
+}
+
+// Mobile header
+.mobile-header {
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}
+
+// Collapsed state adjustments
+.sidebar-content {
+  // Smooth transitions for width changes
+  &.w-16 {
+    .nav-link {
+      justify-content: center;
+      
+      .nav-icon {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1023px) {
+  .sidebar-content {
+    .nav-menu {
+      padding-top: 1rem;
+    }
+  }
+}
+
+// Scrollbar styling for navigation
+.nav-menu {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+}
+
+// Focus states for accessibility
+.nav-link:focus,
+.profile-section button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+// Smooth transitions for all interactive elements
+button, a {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Profile dropdown positioning
+.profile-dropdown {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  
+  button {
+    transition: background-color 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f9fafb;
+    }
+    
+    &:last-child:hover {
+      background-color: #fef2f2;
+    }
+  }
+}
+
+// Hover effects for collapsed navigation items
+.nav-link {
+  &:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Ensure tooltips appear above other elements
+.tooltip {
+  z-index: 60;
+}
+
+// Enhanced toggle button styling
+.toggle-button {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+  
+  &:hover::before {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .material-icons {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Improved collapsed state visual feedback
+.sidebar-content.w-16 {
+  .toggle-button {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Better spacing for collapsed toggle button
+.collapsed-toggle-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
