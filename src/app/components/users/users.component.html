@@ -1,15 +1,19 @@
 <div class="p-6 fade-in">
   <div class="flex justify-between items-center mb-6">
     <div>
-      <h1 class="text-2xl font-title font-semibold text-gray-900 mb-2">Users</h1>
-      <p class="text-gray-600">Manage registered users and their roles</p>
+      <h1 class="text-2xl font-title font-semibold text-gray-900 mb-2">
+        System Users
+      </h1>
+      <p class="text-gray-600">
+        Manage system administrators and staff accounts
+      </p>
     </div>
-    <button 
+    <button
       (click)="showAddUserForm = true"
       class="bg-gradient-imarlet hover:shadow-imarlet text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 btn-hover"
     >
       <span class="material-icons mr-2 text-sm">person_add</span>
-      Add User
+      Add System User
     </button>
   </div>
 
@@ -17,101 +21,176 @@
   <div class="bg-white rounded-xl shadow-soft p-6 mb-6 interactive-hover">
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1">
-        <input 
-          type="text" 
-          placeholder="Search users..."
+        <input
+          type="text"
+          placeholder="Search by name, email, or username..."
           [(ngModel)]="searchTerm"
-          (input)="filterUsers()"
+          (input)="filterSystemUsers()"
           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-        >
+        />
       </div>
       <div class="flex gap-3">
-        <select 
+        <select
           [(ngModel)]="roleFilter"
-          (change)="filterUsers()"
+          (change)="filterSystemUsers()"
           class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
         >
           <option value="">All Roles</option>
           <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
           <option value="agent">Agent</option>
           <option value="support">Support</option>
-          <option value="patient">Patient</option>
         </select>
-        <select 
+        <select
           [(ngModel)]="statusFilter"
-          (change)="filterUsers()"
+          (change)="filterSystemUsers()"
           class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
         >
           <option value="">All Status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
-          <option value="pending">Pending</option>
+          <option value="suspended">Suspended</option>
+        </select>
+        <select
+          [(ngModel)]="departmentFilter"
+          (change)="filterSystemUsers()"
+          class="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+        >
+          <option value="">All Departments</option>
+          <option *ngFor="let dept of getDepartments()" [value]="dept">
+            {{ dept }}
+          </option>
         </select>
       </div>
     </div>
   </div>
 
-  <!-- Users Table -->
+  <!-- System Users Table -->
   <div class="bg-white rounded-xl shadow-soft overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-100">
         <thead class="bg-gray-25">
           <tr>
-            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">User</th>
-            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Role</th>
-            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Activity</th>
-            <th class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              User
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Role
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Department
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Last Login
+            </th>
+            <th
+              class="px-6 py-4 text-left text-xs font-title font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-50">
-          <tr *ngFor="let user of filteredUsers; let i = index" 
-              class="hover:bg-gray-25 transition-all duration-200 stagger-item"
-              [style.animation-delay]="(i * 0.1) + 's'">
+          <tr
+            *ngFor="let user of filteredSystemUsers; let i = index"
+            class="hover:bg-gray-25 transition-all duration-200 stagger-item"
+            [style.animation-delay]="i * 0.1 + 's'"
+          >
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
-                <img 
-                  [src]="user.avatar || 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'" 
-                  [alt]="user.name" 
-                  class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200 hover:ring-primary-300"
-                >
+                <div class="relative">
+                  <img
+                    [src]="
+                      user.avatar ||
+                      'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1'
+                    "
+                    [alt]="user.name"
+                    class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100 transition-all duration-200 hover:ring-primary-300"
+                  />
+                  <div
+                    class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
+                    [class]="user.isOnline ? 'bg-green-400' : 'bg-gray-400'"
+                  ></div>
+                </div>
                 <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-                  <div class="text-sm text-gray-500">{{ user.phone }}</div>
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ user.name }}
+                  </div>
+                  <div class="text-sm text-gray-500">{{ user.email }}</div>
+                  <div class="text-xs text-gray-400">{{ user.username }}</div>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
-                    [class]="getRoleStyle(user.role)">
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                [class]="getRoleStyle(user.role)"
+              >
                 {{ user.role }}
               </span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ user.department || "N/A" }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
-                    [class]="getStatusStyle(user.status)">
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+                [class]="getStatusStyle(user.status)"
+              >
                 {{ user.status }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <div>{{ user.messagesCount }} messages</div>
-              <div>{{ user.callsCount }} calls</div>
+              {{ formatLastLogin(user.lastLogin) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <button 
-                (click)="viewChat(user.id)"
-                class="text-primary-600 hover:text-primary-900 mr-4 btn-hover px-2 py-1 rounded-lg"
-              >
-                <span class="material-icons text-sm mr-1">chat</span>
-                Chat
-              </button>
-              <button 
-                (click)="editUser(user)"
-                class="text-indigo-600 hover:text-indigo-900 btn-hover px-2 py-1 rounded-lg"
-              >
-                <span class="material-icons text-sm mr-1">edit</span>
-                Edit
-              </button>
+              <div class="flex items-center space-x-2">
+                <button
+                  (click)="editSystemUser(user)"
+                  class="text-indigo-600 hover:text-indigo-900 btn-hover px-2 py-1 rounded-lg"
+                  title="Edit User"
+                >
+                  <span class="material-icons text-sm">edit</span>
+                </button>
+                <button
+                  (click)="toggleUserStatus(user)"
+                  [class]="
+                    user.status === 'active'
+                      ? 'text-yellow-600 hover:text-yellow-900'
+                      : 'text-green-600 hover:text-green-900'
+                  "
+                  class="btn-hover px-2 py-1 rounded-lg"
+                  [title]="
+                    user.status === 'active'
+                      ? 'Deactivate User'
+                      : 'Activate User'
+                  "
+                >
+                  <span class="material-icons text-sm">{{
+                    user.status === "active" ? "block" : "check_circle"
+                  }}</span>
+                </button>
+                <button
+                  (click)="deleteSystemUser(user)"
+                  class="text-red-600 hover:text-red-900 btn-hover px-2 py-1 rounded-lg"
+                  title="Delete User"
+                >
+                  <span class="material-icons text-sm">delete</span>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -119,66 +198,104 @@
     </div>
   </div>
 
-  <!-- Add User Modal -->
-  <div *ngIf="showAddUserForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-soft-lg p-6 w-full max-w-md interactive-hover">
+  <!-- Add System User Modal -->
+  <div
+    *ngIf="showAddUserForm"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-white rounded-xl shadow-soft-lg p-6 w-full max-w-md interactive-hover"
+    >
       <div class="flex items-center mb-4">
         <span class="material-icons text-primary-600 mr-3">person_add</span>
-        <h2 class="text-xl font-title font-semibold text-gray-900">Add New User</h2>
+        <h2 class="text-xl font-title font-semibold text-gray-900">
+          Add New System User
+        </h2>
       </div>
-      <form (ngSubmit)="addUser()" #userForm="ngForm">
+      <form (ngSubmit)="addSystemUser()" #userForm="ngForm">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-          <input 
-            type="text" 
-            [(ngModel)]="newUser.name" 
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Full Name *</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="newSystemUser.name"
             name="name"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-          <input 
-            type="text" 
-            [(ngModel)]="newUser.phone" 
-            name="phone"
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Email *</label
+          >
+          <input
+            type="email"
+            [(ngModel)]="newSystemUser.email"
+            name="email"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
+          />
         </div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          <input 
-            type="email" 
-            [(ngModel)]="newUser.email" 
-            name="email"
-            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Username *</label
           >
+          <input
+            type="text"
+            [(ngModel)]="newSystemUser.username"
+            name="username"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Phone</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="newSystemUser.phone"
+            name="phone"
+            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Department</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="newSystemUser.department"
+            name="department"
+            class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
         </div>
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-          <select 
-            [(ngModel)]="newUser.role" 
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Role *</label
+          >
+          <select
+            [(ngModel)]="newSystemUser.role"
             name="role"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
-            <option value="patient">Patient</option>
             <option value="agent">Agent</option>
             <option value="support">Support</option>
+            <option value="manager">Manager</option>
             <option value="admin">Admin</option>
           </select>
         </div>
         <div class="flex gap-3">
-          <button 
+          <button
             type="submit"
             [disabled]="!userForm.form.valid"
             class="flex-1 bg-gradient-imarlet hover:shadow-imarlet disabled:bg-gray-300 text-white py-2 px-4 rounded-xl font-medium transition-all duration-200 btn-hover"
           >
             Add User
           </button>
-          <button 
+          <button
             type="button"
             (click)="showAddUserForm = false"
             class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-xl font-medium transition-all duration-200 btn-hover"

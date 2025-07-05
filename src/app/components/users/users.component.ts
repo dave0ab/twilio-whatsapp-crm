@@ -1,31 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { User } from '../../interfaces/user.interface';
-import { MockDataService } from '../../services/mock-data.service';
-import { NotificationService } from '../../services/notification.service';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { SystemUser } from "../../interfaces/system-user.interface";
+import { MockDataService } from "../../services/mock-data.service";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
-  selector: 'app-users',
+  selector: "app-users",
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  templateUrl: "./users.component.html",
+  styleUrls: ["./users.component.scss"],
 })
 export class UsersComponent implements OnInit {
-  users: User[] = [];
-  filteredUsers: User[] = [];
-  searchTerm: string = '';
-  roleFilter: string = '';
-  statusFilter: string = '';
+  systemUsers: SystemUser[] = [];
+  filteredSystemUsers: SystemUser[] = [];
+  searchTerm: string = "";
+  roleFilter: string = "";
+  statusFilter: string = "";
+  departmentFilter: string = "";
   showAddUserForm: boolean = false;
-  
-  newUser: Partial<User> = {
-    name: '',
-    phone: '',
-    email: '',
-    role: 'patient'
+
+  newSystemUser: Partial<SystemUser> = {
+    name: "",
+    email: "",
+    username: "",
+    role: "agent",
+    department: "",
+    phone: "",
   };
 
   constructor(
@@ -35,87 +38,147 @@ export class UsersComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadUsers();
+    this.loadSystemUsers();
   }
 
-  loadUsers() {
-    this.mockDataService.getUsers().subscribe(users => {
-      this.users = users;
-      this.filteredUsers = [...this.users];
+  loadSystemUsers() {
+    this.mockDataService.getSystemUsers().subscribe((users) => {
+      this.systemUsers = users;
+      this.filteredSystemUsers = [...this.systemUsers];
     });
   }
 
-  filterUsers() {
-    this.filteredUsers = this.users.filter(user => {
-      const matchesSearch = !this.searchTerm || 
+  filterSystemUsers() {
+    this.filteredSystemUsers = this.systemUsers.filter((user) => {
+      const matchesSearch =
+        !this.searchTerm ||
         user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.phone.includes(this.searchTerm);
-      
+        user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.username.toLowerCase().includes(this.searchTerm.toLowerCase());
+
       const matchesRole = !this.roleFilter || user.role === this.roleFilter;
-      const matchesStatus = !this.statusFilter || user.status === this.statusFilter;
-      
-      return matchesSearch && matchesRole && matchesStatus;
+      const matchesStatus =
+        !this.statusFilter || user.status === this.statusFilter;
+      const matchesDepartment =
+        !this.departmentFilter || user.department === this.departmentFilter;
+
+      return matchesSearch && matchesRole && matchesStatus && matchesDepartment;
     });
   }
 
   getRoleStyle(role: string): string {
     const styles: { [key: string]: string } = {
-      'admin': 'bg-red-100 text-red-800',
-      'agent': 'bg-blue-100 text-blue-800',
-      'support': 'bg-green-100 text-green-800',
-      'patient': 'bg-gray-100 text-gray-800'
+      admin: "bg-red-100 text-red-800",
+      manager: "bg-purple-100 text-purple-800",
+      agent: "bg-blue-100 text-blue-800",
+      support: "bg-green-100 text-green-800",
     };
-    return styles[role] || 'bg-gray-100 text-gray-800';
+    return styles[role] || "bg-gray-100 text-gray-800";
   }
 
   getStatusStyle(status: string): string {
     const styles: { [key: string]: string } = {
-      'active': 'bg-green-100 text-green-800',
-      'inactive': 'bg-red-100 text-red-800',
-      'pending': 'bg-yellow-100 text-yellow-800'
+      active: "bg-green-100 text-green-800",
+      inactive: "bg-red-100 text-red-800",
+      suspended: "bg-yellow-100 text-yellow-800",
     };
-    return styles[status] || 'bg-gray-100 text-gray-800';
+    return styles[status] || "bg-gray-100 text-gray-800";
   }
 
-  viewChat(userId: string) {
-    this.router.navigate(['/chat', userId]);
+  getOnlineStatusStyle(isOnline: boolean): string {
+    return isOnline
+      ? "bg-green-100 text-green-800"
+      : "bg-gray-100 text-gray-800";
   }
 
-  editUser(user: User) {
-    // Implementation for editing user
-    this.notificationService.show('Edit user functionality coming soon', 'info');
+  editSystemUser(user: SystemUser) {
+    this.notificationService.show(
+      "Edit user functionality coming soon",
+      "info"
+    );
   }
 
-  addUser() {
-    if (this.newUser.name && this.newUser.phone && this.newUser.role) {
-      const user: User = {
-        id: Date.now().toString(),
-        name: this.newUser.name,
-        phone: this.newUser.phone,
-        email: this.newUser.email || '',
-        role: this.newUser.role as 'admin' | 'agent' | 'support' | 'patient',
-        status: 'active',
-        avatar: '',
-        messagesCount: 0,
-        callsCount: 0,
-        createdAt: new Date(),
-        lastActivity: new Date()
-      };
-
-      this.users.push(user);
-      this.filterUsers();
-      this.showAddUserForm = false;
-      this.resetNewUser();
-      this.notificationService.show('User added successfully', 'success');
+  deleteSystemUser(user: SystemUser) {
+    if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+      this.mockDataService.deleteSystemUser(user.id).subscribe((success) => {
+        if (success) {
+          this.loadSystemUsers();
+          this.notificationService.show("User deleted successfully", "success");
+        } else {
+          this.notificationService.show("Failed to delete user", "error");
+        }
+      });
     }
   }
 
-  resetNewUser() {
-    this.newUser = {
-      name: '',
-      phone: '',
-      email: '',
-      role: 'patient'
+  toggleUserStatus(user: SystemUser) {
+    const newStatus = user.status === "active" ? "inactive" : "active";
+    this.mockDataService
+      .updateSystemUser(user.id, { status: newStatus })
+      .subscribe((updatedUser) => {
+        this.loadSystemUsers();
+        this.notificationService.show(
+          `User status updated to ${newStatus}`,
+          "success"
+        );
+      });
+  }
+
+  addSystemUser() {
+    if (
+      this.newSystemUser.name &&
+      this.newSystemUser.email &&
+      this.newSystemUser.username &&
+      this.newSystemUser.role
+    ) {
+      this.mockDataService
+        .createSystemUser(this.newSystemUser)
+        .subscribe((newUser) => {
+          this.loadSystemUsers();
+          this.showAddUserForm = false;
+          this.resetNewSystemUser();
+          this.notificationService.show(
+            "System user added successfully",
+            "success"
+          );
+        });
+    } else {
+      this.notificationService.show(
+        "Please fill in all required fields",
+        "error"
+      );
+    }
+  }
+
+  resetNewSystemUser() {
+    this.newSystemUser = {
+      name: "",
+      email: "",
+      username: "",
+      role: "agent",
+      department: "",
+      phone: "",
     };
+  }
+
+  getDepartments(): string[] {
+    const departments = this.systemUsers
+      .map((user) => user.department)
+      .filter((dept): dept is string => dept !== undefined && dept !== null)
+      .filter((dept, index, arr) => arr.indexOf(dept) === index);
+    return departments;
+  }
+
+  formatLastLogin(lastLogin?: Date): string {
+    if (!lastLogin) return "Never";
+    const now = new Date();
+    const diff = now.getTime() - lastLogin.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
   }
 }
