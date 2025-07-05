@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MockDataService } from '../../services/mock-data.service';
+import { NotificationService } from '../../services/notification.service';
 import { User } from '../../interfaces/user.interface';
 import { Message } from '../../interfaces/message.interface';
+import { Call } from '../../interfaces/call.interface';
 
 @Component({
   selector: 'app-chat',
@@ -15,12 +17,15 @@ import { Message } from '../../interfaces/message.interface';
 export class ChatComponent implements OnInit {
   user: User | null = null;
   messages: Message[] = [];
+  userCalls: Call[] = [];
   userId: string = '';
+  showCallHistory: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private mockDataService: MockDataService
+    private mockDataService: MockDataService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -28,6 +33,7 @@ export class ChatComponent implements OnInit {
       this.userId = params['userId'];
       this.loadUserData();
       this.loadMessages();
+      this.loadUserCalls();
     });
   }
 
@@ -41,6 +47,44 @@ export class ChatComponent implements OnInit {
     this.mockDataService.getMessages(this.userId).subscribe(messages => {
       this.messages = messages;
     });
+  }
+
+  loadUserCalls() {
+    this.mockDataService.getCallsByUserId(this.userId).subscribe(calls => {
+      this.userCalls = calls.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+    });
+  }
+
+  viewCallHistory() {
+    this.showCallHistory = true;
+  }
+
+  hideCallHistory() {
+    this.showCallHistory = false;
+  }
+
+  initiateCall(type: 'audio' | 'video') {
+    this.notificationService.show(
+      `Initiating ${type} call with ${this.user?.name || 'patient'}...`, 
+      'info'
+    );
+    // In a real app, this would integrate with a calling service
+  }
+
+  formatDuration(seconds: number): string {
+    if (seconds === 0) return 'N/A';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+
+  getCallStatusStyle(status: string): string {
+    const styles: { [key: string]: string } = {
+      'completed': 'bg-primary-100 text-primary-800',
+      'missed': 'bg-red-100 text-red-800',
+      'ongoing': 'bg-blue-100 text-blue-800'
+    };
+    return styles[status] || 'bg-gray-100 text-gray-800';
   }
 
   getMessageStyle(sender: string): string {

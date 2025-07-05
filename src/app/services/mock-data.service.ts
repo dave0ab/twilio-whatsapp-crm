@@ -13,42 +13,73 @@ export class MockDataService {
   private users: User[] = [
     {
       id: '1',
-      name: 'John Doe',
+      name: 'John Smith',
       phone: '+1234567890',
-      email: 'john@example.com',
+      email: 'john.smith@example.com',
       role: 'patient',
       status: 'active',
       avatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
       lastSeen: new Date(Date.now() - 2 * 60 * 1000),
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       messagesCount: 45,
-      callsCount: 3
+      callsCount: 8,
+      lastActivity: new Date(Date.now() - 2 * 60 * 1000)
     },
     {
       id: '2',
       name: 'Sarah Johnson',
       phone: '+1234567891',
-      email: 'sarah@example.com',
+      email: 'sarah.johnson@example.com',
       role: 'patient',
       status: 'active',
       avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
       lastSeen: new Date(Date.now() - 10 * 60 * 1000),
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
       messagesCount: 23,
-      callsCount: 1
+      callsCount: 3,
+      lastActivity: new Date(Date.now() - 10 * 60 * 1000)
     },
     {
       id: '3',
-      name: 'Dr. Mike Wilson',
+      name: 'Michael Brown',
       phone: '+1234567892',
-      email: 'mike@example.com',
-      role: 'admin',
+      email: 'michael.brown@example.com',
+      role: 'patient',
       status: 'active',
       avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
       lastSeen: new Date(Date.now() - 1 * 60 * 1000),
       createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
       messagesCount: 156,
-      callsCount: 12
+      callsCount: 12,
+      lastActivity: new Date(Date.now() - 1 * 60 * 1000)
+    },
+    {
+      id: '4',
+      name: 'Emily Davis',
+      phone: '+1234567893',
+      email: 'emily.davis@example.com',
+      role: 'patient',
+      status: 'active',
+      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      lastSeen: new Date(Date.now() - 30 * 60 * 1000),
+      createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+      messagesCount: 67,
+      callsCount: 5,
+      lastActivity: new Date(Date.now() - 30 * 60 * 1000)
+    },
+    {
+      id: '5',
+      name: 'Robert Wilson',
+      phone: '+1234567894',
+      email: 'robert.wilson@example.com',
+      role: 'patient',
+      status: 'inactive',
+      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+      messagesCount: 34,
+      callsCount: 2,
+      lastActivity: new Date(Date.now() - 2 * 60 * 60 * 1000)
     }
   ];
 
@@ -56,7 +87,7 @@ export class MockDataService {
     {
       id: '1',
       userId: '1',
-      userName: 'John Doe',
+      userName: 'John Smith',
       userAvatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
       type: 'audio',
       duration: 480,
@@ -75,10 +106,58 @@ export class MockDataService {
       startTime: new Date(Date.now() - 1 * 60 * 60 * 1000),
       status: 'missed',
       notes: 'Patient did not answer'
+    },
+    {
+      id: '3',
+      userId: '3',
+      userName: 'Michael Brown',
+      userAvatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      type: 'audio',
+      duration: 720,
+      startTime: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      endTime: new Date(Date.now() - 4 * 60 * 60 * 1000 + 720 * 1000),
+      status: 'completed',
+      notes: 'Follow-up consultation'
+    },
+    {
+      id: '4',
+      userId: '1',
+      userName: 'John Smith',
+      userAvatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      type: 'video',
+      duration: 900,
+      startTime: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      endTime: new Date(Date.now() - 6 * 60 * 60 * 1000 + 900 * 1000),
+      status: 'completed',
+      notes: 'Initial consultation'
+    },
+    {
+      id: '5',
+      userId: '4',
+      userName: 'Emily Davis',
+      userAvatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      type: 'audio',
+      duration: 0,
+      startTime: new Date(Date.now() - 8 * 60 * 60 * 1000),
+      status: 'missed',
+      notes: 'Appointment reminder call'
+    },
+    {
+      id: '6',
+      userId: '2',
+      userName: 'Sarah Johnson',
+      userAvatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
+      type: 'audio',
+      duration: 360,
+      startTime: new Date(Date.now() - 12 * 60 * 60 * 1000),
+      endTime: new Date(Date.now() - 12 * 60 * 60 * 1000 + 360 * 1000),
+      status: 'completed',
+      notes: 'Prescription refill discussion'
     }
   ];
 
   private messages: Message[] = [
+    // John Smith messages
     {
       id: '1',
       userId: '1',
@@ -91,7 +170,7 @@ export class MockDataService {
     {
       id: '2',
       userId: '1',
-      content: 'Hi! I\'ll help you with your test results. Can you please share your report?',
+      content: 'Hi John! I\'ll help you with your test results. Can you please share your report?',
       type: 'text',
       sender: 'bot',
       timestamp: new Date(Date.now() - 29 * 60 * 1000),
@@ -108,6 +187,111 @@ export class MockDataService {
       fileSize: 1024000,
       fileUrl: 'https://example.com/documents/blood_test_report.pdf',
       isRead: true
+    },
+    {
+      id: '4',
+      userId: '1',
+      content: 'Thank you for sharing the report. I\'ve reviewed it and everything looks normal. I\'ll schedule a follow-up call to discuss the details.',
+      type: 'text',
+      sender: 'agent',
+      timestamp: new Date(Date.now() - 25 * 60 * 1000),
+      isRead: true
+    },
+    // Sarah Johnson messages
+    {
+      id: '5',
+      userId: '2',
+      content: 'I would like to schedule an appointment',
+      type: 'text',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      isRead: true
+    },
+    {
+      id: '6',
+      userId: '2',
+      content: 'I can help you schedule an appointment. What type of appointment do you need?',
+      type: 'text',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 30 * 1000),
+      isRead: true
+    },
+    {
+      id: '7',
+      userId: '2',
+      content: 'General consultation with Dr. Smith',
+      type: 'text',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000 + 60 * 1000),
+      isRead: true
+    },
+    {
+      id: '8',
+      userId: '2',
+      content: 'Your appointment has been scheduled for tomorrow at 3 PM with Dr. Smith.',
+      type: 'text',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 15 * 60 * 1000),
+      isRead: true
+    },
+    // Michael Brown messages
+    {
+      id: '9',
+      userId: '3',
+      content: 'I have my lab results ready',
+      type: 'text',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      isRead: true
+    },
+    {
+      id: '10',
+      userId: '3',
+      content: 'Great! Please upload your lab results and I\'ll have a doctor review them.',
+      type: 'text',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000 + 30 * 1000),
+      isRead: true
+    },
+    {
+      id: '11',
+      userId: '3',
+      content: 'Here are my test results',
+      type: 'document',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      isRead: false,
+      fileName: 'lab_results_2024.pdf',
+      fileSize: 2048000,
+      fileUrl: 'https://example.com/documents/lab_results_2024.pdf'
+    },
+    // Emily Davis messages
+    {
+      id: '12',
+      userId: '4',
+      content: 'Can I schedule a video consultation?',
+      type: 'text',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+      isRead: true
+    },
+    {
+      id: '13',
+      userId: '4',
+      content: 'Of course! I can help you schedule a video consultation. What would be your preferred time?',
+      type: 'text',
+      sender: 'bot',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000 + 30 * 1000),
+      isRead: true
+    },
+    {
+      id: '14',
+      userId: '4',
+      content: 'Tomorrow afternoon would be perfect',
+      type: 'text',
+      sender: 'user',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000 + 60 * 1000),
+      isRead: false
     }
   ];
 
@@ -115,7 +299,7 @@ export class MockDataService {
     {
       id: '1',
       userId: '1',
-      userName: 'John Doe',
+      userName: 'John Smith',
       userPhone: '+1234567890',
       type: 'lab_test',
       title: 'Complete Blood Count',
@@ -134,13 +318,42 @@ export class MockDataService {
       userName: 'Sarah Johnson',
       userPhone: '+1234567891',
       type: 'consultation',
-      title: 'Dermatology Consultation',
-      description: 'Skin condition consultation',
+      title: 'General Consultation',
+      description: 'General health consultation',
       status: 'pending',
       priority: 'high',
       createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
       amount: 200
+    },
+    {
+      id: '3',
+      userId: '3',
+      userName: 'Michael Brown',
+      userPhone: '+1234567892',
+      type: 'prescription',
+      title: 'Medication Refill',
+      description: 'Monthly prescription refill',
+      status: 'in_progress',
+      priority: 'medium',
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      assignedTo: 'Dr. Sarah Lee',
+      amount: 75
+    },
+    {
+      id: '4',
+      userId: '4',
+      userName: 'Emily Davis',
+      userPhone: '+1234567893',
+      type: 'document_upload',
+      title: 'Medical Records Upload',
+      description: 'Upload previous medical records for review',
+      status: 'pending',
+      priority: 'low',
+      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+      amount: 25
     }
   ];
 
@@ -159,6 +372,10 @@ export class MockDataService {
 
   getCalls(): Observable<Call[]> {
     return of(this.calls).pipe(delay(500));
+  }
+
+  getCallsByUserId(userId: string): Observable<Call[]> {
+    return of(this.calls.filter(call => call.userId === userId)).pipe(delay(300));
   }
 
   getMessages(userId: string): Observable<Message[]> {
@@ -200,9 +417,43 @@ export class MockDataService {
       avatar: userData.avatar,
       createdAt: new Date(),
       messagesCount: 0,
-      callsCount: 0
+      callsCount: 0,
+      lastActivity: new Date()
     };
     this.users.push(newUser);
     return of(newUser).pipe(delay(500));
+  }
+
+  // Get user activity summary (calls + messages)
+  getUserActivity(userId: string): Observable<{calls: Call[], messages: Message[], user: User | undefined}> {
+    const user = this.users.find(u => u.id === userId);
+    const userCalls = this.calls.filter(call => call.userId === userId);
+    const userMessages = this.messages.filter(msg => msg.userId === userId);
+    
+    return of({
+      calls: userCalls,
+      messages: userMessages,
+      user: user
+    }).pipe(delay(300));
+  }
+
+  // Get users with recent activity (for WhatsApp chatbot)
+  getUsersWithRecentActivity(): Observable<User[]> {
+    // Sort users by last activity and return those with recent messages or calls
+    const activeUsers = this.users
+      .filter(user => {
+        const hasRecentMessages = this.messages.some(msg => 
+          msg.userId === user.id && 
+          msg.timestamp > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        );
+        const hasRecentCalls = this.calls.some(call => 
+          call.userId === user.id && 
+          call.startTime > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        );
+        return hasRecentMessages || hasRecentCalls;
+      })
+      .sort((a, b) => (b.lastActivity?.getTime() || 0) - (a.lastActivity?.getTime() || 0));
+
+    return of(activeUsers).pipe(delay(400));
   }
 }

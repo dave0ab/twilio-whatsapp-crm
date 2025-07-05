@@ -1,0 +1,157 @@
+// Login component specific styles
+.login-card {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  // Entrance animation
+  &.animate-fade-in {
+    animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Google button hover effect
+.google-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// Form field enhancements
+.form-field {
+  position: relative;
+  
+  input {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:focus {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+    }
+    
+    &.error {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+  
+  label {
+    transition: color 0.2s ease-in-out;
+  }
+  
+  &:focus-within label {
+    color: #10b981;
+  }
+}
+
+// Loading spinner
+.loading-spinner {
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Error message animation
+.error-message {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Success message animation
+.success-message {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Button press effect
+.btn-press {
+  transition: all 0.1s ease-in-out;
+  
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .login-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+// Focus states for accessibility
+input:focus,
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .login-card {
+    border: 2px solid #000;
+    box-shadow: none;
+  }
+  
+  input, button {
+    border: 2px solid #000;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  input,
+  button {
+    animation: none;
+    transition: none;
+  }
+}
+
+// Dark mode support (for future implementation)
+@media (prefers-color-scheme: dark) {
+  // Dark mode styles can be added here
+}

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { SidebarService } from '../../services/sidebar.service';
+import { AuthService, User } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -17,6 +18,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public isProfileDropdownOpen = false;
   public isMobile = false;
   public isDesktopCollapsed = false;
+  public currentUser: User | null = null;
   private subscriptions = new Subscription();
 
   public menuItems = [
@@ -31,7 +33,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private notificationService: NotificationService,
-    private sidebarService: SidebarService
+    private sidebarService: SidebarService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -41,6 +44,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.sidebarService.isCollapsed$.subscribe(collapsed => {
         this.isDesktopCollapsed = collapsed;
+      })
+    );
+
+    // Subscribe to current user
+    this.subscriptions.add(
+      this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user;
       })
     );
   }
@@ -104,10 +114,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public signOut() {
     this.isProfileDropdownOpen = false;
     this.notificationService.show('Signing out...', 'info');
-    // Implement actual sign out logic here
-    setTimeout(() => {
-      this.notificationService.show('Successfully signed out', 'success');
-      // Redirect to login page or handle sign out
-    }, 1000);
+    this.authService.signOut();
   }
 }

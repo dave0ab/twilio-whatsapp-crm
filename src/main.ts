@@ -6,8 +6,10 @@ import { routes } from './app/app.routes';
 import { SidebarComponent } from './app/components/sidebar/sidebar.component';
 import { ToastComponent } from './app/components/toast/toast.component';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { SidebarService } from './app/services/sidebar.service';
+import { AuthService } from './app/services/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -16,10 +18,13 @@ import { SidebarService } from './app/services/sidebar.service';
   providers: [SidebarService],
   template: `
     <div class="app-container flex h-screen bg-gray-50 overflow-hidden">
-      <app-sidebar></app-sidebar>
+      <!-- Only show sidebar when not on login page -->
+      <app-sidebar *ngIf="!isLoginPage"></app-sidebar>
+      
       <main class="main-content flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
-            [class.ml-64]="!isMobile && !isDesktopSidebarCollapsed"
-            [class.ml-16]="!isMobile && isDesktopSidebarCollapsed">
+            [class.ml-64]="!isMobile && !isDesktopSidebarCollapsed && !isLoginPage"
+            [class.ml-16]="!isMobile && isDesktopSidebarCollapsed && !isLoginPage"
+            [class.ml-0]="isLoginPage">
         
         <div class="content-area flex-1 overflow-auto">
           <router-outlet></router-outlet>
@@ -35,7 +40,7 @@ import { SidebarService } from './app/services/sidebar.service';
     }
     
     .main-content {
-      min-width: 0; // Prevents flex item from overflowing
+      min-width: 0;
       transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       
       @media (max-width: 1023px) {
@@ -46,15 +51,19 @@ import { SidebarService } from './app/services/sidebar.service';
     
     .content-area {
       @media (max-width: 1023px) {
-        padding-top: 4rem; // Account for mobile header
+        padding-top: 4rem;
       }
       
       @media (min-width: 1024px) {
         padding-top: 0;
       }
+      
+      // Override padding for login page
+      &.login-page {
+        padding-top: 0 !important;
+      }
     }
     
-    // Smooth scrolling
     .content-area {
       scroll-behavior: smooth;
       
@@ -80,8 +89,12 @@ import { SidebarService } from './app/services/sidebar.service';
 export class App implements OnInit {
   isMobile = false;
   isDesktopSidebarCollapsed = false;
+  isLoginPage = false;
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(
+    private sidebarService: SidebarService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.checkScreenSize();
@@ -90,6 +103,16 @@ export class App implements OnInit {
     this.sidebarService.isCollapsed$.subscribe(collapsed => {
       this.isDesktopSidebarCollapsed = collapsed;
     });
+
+    // Listen to route changes to detect login page
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.isLoginPage = event.url === '/login';
+    });
+
+    // Check initial route
+    this.isLoginPage = this.router.url === '/login';
   }
 
   @HostListener('window:resize', ['$event'])

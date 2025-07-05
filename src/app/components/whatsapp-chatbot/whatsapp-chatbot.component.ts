@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { WhatsappChatbotService } from '../../services/whatsapp-chatbot.service';
+import { MockDataService } from '../../services/mock-data.service';
 import { NotificationService } from '../../services/notification.service';
 import { Customer } from '../../interfaces/customer.interface';
 import { ChatMessage } from '../../interfaces/chat-message.interface';
+import { Call } from '../../interfaces/call.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,17 +30,27 @@ export class WhatsappChatbotComponent implements OnInit, OnDestroy, AfterViewChe
   isMobile = false;
   showCustomerList = true;
   
+  // Call history integration
+  showCallHistoryModal = false;
+  selectedCustomerForCalls: Customer | null = null;
+  customerCalls: Call[] = [];
+  customerMessageCounts: { [customerId: string]: number } = {};
+  customerCallCounts: { [customerId: string]: number } = {};
+  
   private subscriptions = new Subscription();
   private shouldScrollToBottom = false;
 
   constructor(
     private whatsappService: WhatsappChatbotService,
-    private notificationService: NotificationService
+    private mockDataService: MockDataService,
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.checkScreenSize();
     this.loadCustomers();
+    this.loadCustomerStats();
     
     // Subscribe to selected customer changes
     this.subscriptions.add(
@@ -90,6 +103,16 @@ export class WhatsappChatbotComponent implements OnInit, OnDestroy, AfterViewChe
         this.notificationService.show('Error loading customers', 'error');
         this.isLoading = false;
       }
+    });
+  }
+
+  loadCustomerStats() {
+    // Load message and call counts for each customer
+    this.mockDataService.getUsers().subscribe(users => {
+      users.forEach(user => {
+        this.customerMessageCounts[user.id] = user.messagesCount;
+        this.customerCallCounts[user.id] = user.callsCount;
+      });
     });
   }
 
@@ -149,6 +172,60 @@ export class WhatsappChatbotComponent implements OnInit, OnDestroy, AfterViewChe
     this.whatsappService.markMessagesAsRead(customerId).subscribe();
   }
 
+  // Call history methods
+  viewCallHistory(customerId: string) {
+    const customer = this.customers.find(c => c.id === customerId);
+    if (customer) {
+      this.selectedCustomerForCalls = customer;
+      this.mockDataService.getCallsByUserId(customerId).subscribe(calls => {
+        this.customerCalls = calls.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+        this.showCallHistoryModal = true;
+      });
+    }
+  }
+
+  closeCallHistoryModal() {
+    this.showCallHistoryModal = false;
+    this.selectedCustomerForCalls = null;
+    this.customerCalls = [];
+  }
+
+  initiateCall(type: 'audio' | 'video') {
+    if (this.selectedCustomer) {
+      this.notificationService.show(
+        `Initiating ${type} call with ${this.selectedCustomer.name}...`, 
+        'info'
+      );
+    }
+  }
+
+  initiateQuickCall(customerId: string, type: 'audio' | 'video') {
+    const customer = this.customers.find(c => c.id === customerId);
+    this.notificationService.show(
+      `Initiating ${type} call with ${customer?.name || 'patient'}...`, 
+      'info'
+    );
+  }
+
+  initiateCallFromModal(type: 'audio' | 'video') {
+    if (this.selectedCustomerForCalls) {
+      this.notificationService.show(
+        `Initiating ${type} call with ${this.selectedCustomerForCalls.name}...`, 
+        'info'
+      );
+      this.closeCallHistoryModal();
+    }
+  }
+
+  // Utility methods
+  getCustomerCallCount(customerId: string): number {
+    return this.customerCallCounts[customerId] || 0;
+  }
+
+  getCustomerMessageCount(customerId: string): number {
+    return this.customerMessageCounts[customerId] || 0;
+  }
+
   getMessageStyle(sender: string): string {
     const styles: { [key: string]: string } = {
       'customer': 'bg-gray-100 text-gray-900 ml-0 mr-12',
@@ -165,6 +242,22 @@ export class WhatsappChatbotComponent implements OnInit, OnDestroy, AfterViewChe
       'typing': 'bg-yellow-400'
     };
     return colors[status] || 'bg-gray-400';
+  }
+
+  getCallStatusStyle(status: string): string {
+    const styles: { [key: string]: string } = {
+      'completed': 'bg-primary-100 text-primary-800',
+      'missed': 'bg-red-100 text-red-800',
+      'ongoing': 'bg-blue-100 text-blue-800'
+    };
+    return styles[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  formatDuration(seconds: number): string {
+    if (seconds === 0) return 'N/A';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 
   formatFileSize(bytes: number): string {
@@ -209,7 +302,6 @@ export class WhatsappChatbotComponent implements OnInit, OnDestroy, AfterViewChe
   }
 
   downloadFile(fileUrl: string, fileName: string) {
-    // In a real implementation, this would handle file downloads
     this.notificationService.show(`Downloading ${fileName}...`, 'info');
   }
 
